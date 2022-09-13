@@ -2,13 +2,13 @@
 # user. This was made in 2021 by William Elegy.
 import random
 
+
 # These Tuples and dictionary are used for building cards.
-values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7,
-            'Eight':8, 'Nine':9, 'Ten':10, 'Jack':11, 'Queen':12, 'King':13,
-            'Ace':14}
+values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7,'Eight':8, 
+          'Nine':9, 'Ten':10, 'Jack':11, 'Queen':12, 'King':13, 'Ace':14}
 suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
-ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine',
-            'Ten', 'Jack', 'Queen', 'King', 'Ace')
+ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 
+         'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King', 'Ace')
 
 
 class Card:
@@ -46,22 +46,18 @@ class Player:
 # and dealer's hand.  It can draw cards and return a string with info 
 # on the player's and dealer's hands.
     def __init__(self,name):
-        
         self.name = name
         self.hand = 0
         
     def draw(self,new_card):
-        
         if self.hand + new_card.value > 21 and new_card.rank == 'Ace':
             self.hand += 1
-            
         else:
             self.hand += new_card.value
         
         print(f'{self.name} drew {new_card}')
 
     def __str__(self):
-        
         return f"{self.name}'s current score is {self.hand}"
     
 
@@ -70,28 +66,22 @@ class Bank:
 # also used to add or remove currency from the player's bank if they 
 # win or lose, as well as prompt the player to bet before each hand.
     def __init__(self):
-        
         self.balance = 100
         self.wager = 0
         
     def bet(self,amount):
-            
         self.wager = int(amount)
         
-        while self.balance - self.wager < 0:
-                self.wager = int(input('Please enter a bet amount '
-                                       'that you can afford: '))
-
+        while self.balance - self.wager < 0 or self.wager < 1:
+                self.wager = int(input('Please enter a valid bet amount '))
+                                       
     def win(self):
-        
         self.balance = self.balance + self.wager * 2
             
     def lose(self):
-        
         self.balance = self.balance - self.wager
         
     def __str__(self):
-        
         return f"Your current balance is {self.balance}"
      
 
@@ -100,6 +90,7 @@ def twentyone(score):
 # has won with a perfect score.
     if score.hand == 21:
         return True
+
     else:
         return False
     
@@ -110,6 +101,7 @@ def win_check(player,dealer):
     if 21 - player.hand < 21 - dealer.hand and player.hand != dealer.hand:
         return True
         print('problem here')
+
     else:
         return False
         print('problem here')
@@ -120,6 +112,7 @@ def bust_check(score):
 # exceeded a score of 21.
     if score.hand > 21:
         return True
+
     else:
         return False
       
@@ -130,21 +123,14 @@ def again_check():
     check = ''
     
     while check.upper() != 'Y' and check.upper() != 'N':
-        
         check = input('Play Again? (Y or N) ')
         
-        if check.upper() == 'Y':
-            
-            return True
-            
-        elif check.upper() == 'N':
-        
-            return False
-        
-        else:
-            
-            pass
-        
+    if check.upper() == 'Y':
+        return True
+
+    else:
+        return False
+
 def hit_or_stay():
 # The hit_or_stay function prompts the player to select whether they 
 # want to draw another card or stay.
@@ -167,17 +153,18 @@ def main():
 # The functions previously defined will be put to use in the main 
 # function.
     playagain = True
-    # Display a welcome message and create the players bank.
+    # Display a welcome message, create the players bank and ask 
+    # for the players name.
     while True:
         print('Welcome to Blackjack!')
         human_bank = Bank()
+        human_name = input('What is your name? ')
         playagain = True
         # As long as it is the first round or the player has selected 
         # that they would like to play again, this loop will run.
         while playagain == True:
-            # Create an empty hand for the player 
-            # and ask them their name.
-            human = Player(input('What is your name? '))
+            # Create an empty hand for the player.
+            human = Player(human_name)
             # Create an empty hand for the dealer.
             dealer = Player('Dealer')
             # Create a new deck.
@@ -187,10 +174,11 @@ def main():
             # Print the players bank.
             print(human_bank)
 
+            # Ask the player how much they would like to bet.  
+            # Once the player has entered a valid number this 
+            # loop will end.
             while True:
-                # Ask the player how much they would like to bet.
-                # Once the player has entered a valid number this 
-                # loop will end.
+                
                 try:
                     human_bank.bet(int(input('How much will you bet '
                                              'on this hand? ')))
@@ -203,11 +191,12 @@ def main():
         
             pchoice = False
             
+            # Ask the player if they would like to draw cards 
+            # until they reach a score of 21, bust, or select stay.
             while (bust_check(human) == False and 
                    twentyone(human) == False and 
                    pchoice == False):
-                # Ask the player if they would like to draw cards 
-                # until they reach a score of 21, bust, or select stay.
+                
                 print(human)
             
                 if hit_or_stay() == True:
@@ -215,14 +204,14 @@ def main():
                 
                 else:
                     pchoice = True
-                
+            # While neither the player nor dealer have reached a score 
+            # of 21 or busted, the dealer will draw cards until they 
+            # win or bust.
             while (bust_check(dealer) == False and 
                    twentyone(dealer) == False and 
                    bust_check(human) == False and 
                    twentyone(human) == False and
                    human.hand >= dealer.hand):
-                # If the player did not reach a score of 21 or bust, 
-                # the dealer will draw cards until they win or bust.
                 dealer.draw(new_deck.deal_one())
                 print(dealer)
             
